@@ -167,11 +167,3 @@ def draw_pitch(pitch, line, orientation, view):
         ax.add_artist(rec1)
         ax.add_artist(rec2)
         ax.add_artist(circle3)
-
-
-#searches for the player in the players list
-def search_player(player_id, players):
-    for player in players:
-        if player['wyId'] == player_id:
-            return player
-    return 'No player found'
