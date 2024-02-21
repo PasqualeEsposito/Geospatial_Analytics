@@ -100,3 +100,32 @@ def plot_histogram_per_role(df):
     plt.legend(title='Role')
     plt.xticks(rotation=45)
     plt.show()
+
+
+def get_passes_before_shot(events_df, passes_before_shot):
+    for index, row in events_df.iterrows():
+        if row['eventId'] == 10:
+            match_id = row['matchId']
+            event_sec = row['eventSec']
+            
+            passes_before_shot[match_id, event_sec] = 0
+            
+            for i in range(index - 1, -1, -1):
+                if events_df.at[i, 'eventId'] in [3, 8] and events_df.at[i, 'teamId'] == row['teamId']:
+                    passes_before_shot[match_id, event_sec] += 1
+                elif events_df.at[i, 'teamId'] != row['teamId']:
+                    break
+
+
+def count_passes_before_shot(df):
+    passes_counts = df['Passes'].value_counts()
+    passes_counts = passes_counts.sort_index()
+    passes_counts = pd.DataFrame(passes_counts)
+    return pd.DataFrame(passes_counts)
+
+
+def extract_tags(x):
+    tags = []
+    for tag in x:
+        tags.append(tag['id'])
+    return tags
