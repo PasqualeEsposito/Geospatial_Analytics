@@ -69,12 +69,12 @@ def count_distances(df):
     return distance_counts
 
 
-def plot_histogram(df):
+def plot_histogram(df, x, y, xlabel, ylabel, title):
     plt.figure(figsize=(15, 6))
-    sns.barplot(data=df, x='distance', y='count', color='skyblue')
-    plt.xlabel('Distance')
-    plt.ylabel('Count')
-    plt.title('Count of Distances')
+    sns.barplot(data=df, x=x, y=y, color='skyblue')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
     plt.xticks(rotation=45)
     plt.show()
 
