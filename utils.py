@@ -38,12 +38,13 @@ def prepare_players(players_df):
     return players_df
 
 
+# I multiply the x and y coordinates by 1.05 and 0.65 respectively to convert the pitch from 100x100 (percentage) to 105x65
 def compute_distance(df):
     # Sort the dataframe by playerId, matchId, matchPeriod, gameweek, and eventSec
     df.sort_values(by=['matchId', 'playerId', 'matchPeriod', 'eventSec'], inplace=True)
 
     # Compute the distance between consecutive points
-    df['distance'] = np.sqrt(((df.groupby(['matchId', 'playerId', 'matchPeriod'])['x'].diff()**2) + (df.groupby(['playerId', 'matchId', 'matchPeriod'])['y'].diff()**2)))
+    df['distance'] = np.sqrt((((df.groupby(['matchId', 'playerId', 'matchPeriod'])['x'].diff()*1.05)**2) + ((df.groupby(['playerId', 'matchId', 'matchPeriod'])['y'].diff()*0.65)**2)))
 
     # Fill NaN values with 0
     df['distance'].fillna(0, inplace=True)
@@ -93,7 +94,8 @@ def group_by_distance_role(df):
 
 def plot_histogram_per_role(df):
     plt.figure(figsize=(25, 6))
-    sns.barplot(data=df, x='distance', y='count', hue='role')
+    colors = {'GK': '#00bfff', 'DF': '#ff80a6', 'MD': '#ff331a', 'FW': '#ffbf00'}
+    sns.barplot(data=df, x='distance', y='count', hue='role', palette=colors)
     plt.xlabel('Distance')
     plt.ylabel('Count')
     plt.title('Histogram of Distances by Role')
