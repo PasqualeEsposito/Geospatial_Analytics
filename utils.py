@@ -70,12 +70,24 @@ def count_distances(df):
     return distance_counts
 
 
-def plot_histogram(df, x, y, xlabel, ylabel, title):
+def plot_histogram(df, x, y, xlabel, ylabel, title):     
     plt.figure(figsize=(15, 6))
     sns.barplot(data=df, x=x, y=y, color='skyblue')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
+    plt.xticks(rotation=45)
+    plt.show()
+
+
+def plot_histogram_pass_chain(df, x, y, xlabel, ylabel, title):
+    plt.figure(figsize=(25, 6))
+    colors = {False: '#18d17b', True: '#75bbfd'}
+    sns.barplot(data=df, x='Passes', y='count', hue='duel', palette=colors)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+    plt.legend(title='With duels')
     plt.xticks(rotation=45)
     plt.show()
 
@@ -104,7 +116,8 @@ def plot_histogram_per_role(df):
     plt.show()
 
 
-def get_passes_before_shot(events_df, passes_before_shot):
+def get_passes_before_shot(events_df):
+    passes_before_shot = {}
     for index, row in events_df.iterrows():
         if row['eventId'] == 10:
             match_id = row['matchId']
@@ -117,13 +130,15 @@ def get_passes_before_shot(events_df, passes_before_shot):
                     passes_before_shot[match_id, event_sec] += 1
                 elif events_df.at[i, 'teamId'] != row['teamId']:
                     break
+    return passes_before_shot
 
 
-def count_passes_before_shot(df):
+def count_passes_before_shot(dictionary):
+    df = pd.DataFrame.from_dict(dictionary, orient='index', columns=['Passes'])
     passes_counts = df['Passes'].value_counts()
     passes_counts = passes_counts.sort_index()
     passes_counts = pd.DataFrame(passes_counts)
-    return pd.DataFrame(passes_counts)
+    return pd.DataFrame(passes_counts).rename_axis('Passes').reset_index()
 
 
 def extract_tags(x):
