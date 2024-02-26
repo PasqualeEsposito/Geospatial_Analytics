@@ -146,3 +146,65 @@ def extract_tags(x):
     for tag in x:
         tags.append(tag['id'])
     return tags
+
+
+def draw_pitch_tessellation():
+    fig, ax = plt.subplots()
+
+    # Draw the large rectangle
+    rect = plt.Rectangle((0, 0), 3, 3, linewidth=2, edgecolor='black', facecolor='none')
+    ax.add_patch(rect)
+
+    # Draw horizontal and vertical lines to split the large rectangle into 9 smaller rectangles
+    for i in range(1, 3):
+        plt.plot([0, 3], [i, i], color='black', linewidth=2)
+        plt.plot([i, i], [0, 3], color='black', linewidth=2)
+
+    # Add numbers from 0 to 8 in the smaller rectangles
+    for i in range(3):
+        for j in range(3):
+            ax.text(i + 0.5, j + 0.5, str(i * 3 + j), ha='center', va='center', fontsize=14)
+
+    # Set aspect of the plot to equal, so the rectangles are square
+    ax.set_aspect('equal')
+
+    # Set axis limits and remove ticks
+    plt.xlim(0, 3)
+    plt.ylim(0, 3)
+    plt.xticks([])
+    plt.yticks([])
+
+    # Show the plot
+    plt.show()
+
+
+def from_coords_to_tesselation(positions):
+    squares = []
+    for position in positions:
+        if position['x'] < 33:
+            if position['y'] < 33:
+                squares.append(0)
+            else:
+                if position['y'] < 66:
+                    squares.append(1)
+                else:
+                    squares.append(2)
+                
+        elif position['x'] < 66:
+            if position['y'] < 33:
+                squares.append(3)
+            else:
+                if position['y'] < 66:
+                    squares.append(4)
+                else:
+                    squares.append(5)
+            
+        else:
+            if position['y'] < 33:
+                squares.append(6)
+            else:
+                if position['y'] < 66:
+                    squares.append(7)
+                else:
+                    squares.append(8)
+    return squares
