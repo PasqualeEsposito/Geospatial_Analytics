@@ -179,32 +179,30 @@ def draw_pitch_tessellation():
 
 
 def from_coords_to_tesselation(positions):
-    squares = []
-    for position in positions:
-        if position['x'] < 33:
-            if position['y'] < 33:
-                squares.append(0)
-            else:
-                if position['y'] < 66:
-                    squares.append(1)
-                else:
-                    squares.append(2)
-                
-        elif position['x'] < 66:
-            if position['y'] < 33:
-                squares.append(3)
-            else:
-                if position['y'] < 66:
-                    squares.append(4)
-                else:
-                    squares.append(5)
-            
+    position = positions[0]
+    if position['x'] < 33:
+        if position['y'] < 33:
+            return 0
         else:
-            if position['y'] < 33:
-                squares.append(6)
+            if position['y'] < 66:
+                return 1
             else:
-                if position['y'] < 66:
-                    squares.append(7)
-                else:
-                    squares.append(8)
-    return squares
+                return 2
+            
+    elif position['x'] < 66:
+        if position['y'] < 33:
+            return 3
+        else:
+            if position['y'] < 66:
+                return 4
+            else:
+                return 5
+        
+    else:
+        if position['y'] < 33:
+            return 6
+        else:
+            if position['y'] < 66:
+                return 7
+            else:
+                return 8
