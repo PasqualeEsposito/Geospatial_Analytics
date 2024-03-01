@@ -135,16 +135,16 @@ def group_by_distance_role(df):
     return distance_counts_by_role
 
 
-#Input: df (DataFrame)
+#Input: df (DataFrame), title (string)
 #
 #This function plots a histogram for the distances traveled by players, divided by role.
-def plot_histogram_per_role(df):
+def plot_histogram_per_role(df, title):
     plt.figure(figsize=(25, 6))
     colors = {'GK': '#00bfff', 'DF': '#ff80a6', 'MD': '#ff331a', 'FW': '#ffbf00'}
     sns.barplot(data=df, x='distance', y='count', hue='role', palette=colors)
     plt.xlabel('Distance')
     plt.ylabel('Count')
-    plt.title('Histogram of Distances by Role')
+    plt.title(title)
     plt.legend(title='Role')
     plt.xticks(rotation=45)
     plt.show()
@@ -168,6 +168,7 @@ def get_passes_before_shot(events_df):
                 elif events_df.at[i, 'teamId'] != row['teamId']:
                     break
     return passes_before_shot
+
 
 #Input: dictionary (dictionary)
 #Output: passes_counts (DataFrame)
