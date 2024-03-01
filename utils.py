@@ -141,12 +141,12 @@ def group_by_distance_role(df):
 def plot_histogram_per_role(df, title):
     plt.figure(figsize=(25, 6))
     colors = {'GK': '#00bfff', 'DF': '#ff80a6', 'MD': '#ff331a', 'FW': '#ffbf00'}
-    sns.barplot(data=df, x='distance', y='count', hue='role', palette=colors)
+    sns.barplot(data=df, x='distance', y='count', hue='role', palette=colors, ci=None)
     plt.xlabel('Distance')
     plt.ylabel('Count')
     plt.title(title)
     plt.legend(title='Role')
-    plt.xticks(rotation=45)
+    #plt.xticks(rotation=45)
     plt.show()
 
 #Input: events_df (DataFrame)
