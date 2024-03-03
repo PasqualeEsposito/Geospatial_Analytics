@@ -146,7 +146,7 @@ def plot_histogram_per_role(df, title):
     plt.ylabel('Count')
     plt.title(title)
     plt.legend(title='Role')
-    #plt.xticks(rotation=45)
+    plt.xticks(rotation=45)
     plt.show()
 
 #Input: events_df (DataFrame)
