@@ -118,6 +118,20 @@ def plot_histogram_pass_chain(df, x, y, xlabel, ylabel, title):
     plt.xticks(rotation=45)
     plt.show()
 
+#Input: df (DataFrame), x (string), y (string), xlabel (string), ylabel (string), title (string)
+#
+#The function plots the values present in the x and y axis of the df DataFrame.
+def plot_histogram_comparison_pass_chain(df, x, y, xlabel, ylabel, title):
+    plt.figure(figsize=(25, 6))
+    colors = {False: '#18d17b', True: '#75bbfd'}
+    sns.barplot(data=df, x='Passes', y='count', hue='Goal', palette=colors, ci=None)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+    plt.legend(title='Goal')
+    plt.xticks(rotation=45)
+    plt.show()
+
 
 #Input: df (DataFrame)
 #Output: distance_counts_by_role (DataFrame)
