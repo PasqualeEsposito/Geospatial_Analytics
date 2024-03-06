@@ -115,7 +115,7 @@ def plot_histogram_pass_chain(df, x, y, xlabel, ylabel, title):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
-    plt.legend(title='With duels')
+    plt.legend(title='With duels', loc='upper right')
     plt.xticks(rotation=45)
     plt.show()
 
@@ -129,7 +129,7 @@ def plot_histogram_comparison_pass_chain(df, x, y, xlabel, ylabel, title):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
-    plt.legend(title='Goal')
+    plt.legend(title='Goal', loc='upper right')
     plt.xticks(rotation=45)
     plt.show()
 
@@ -162,7 +162,7 @@ def plot_histogram_per_role(df, title):
     plt.xlabel('Distance')
     plt.ylabel('Count')
     plt.title(title)
-    plt.legend(title='Role')
+    plt.legend(title='Role', loc='upper right')
     plt.xticks(rotation=45)
     plt.show()
 
@@ -197,7 +197,9 @@ def count_passes_before_shot(dictionary):
     passes_counts = df['Passes'].value_counts()
     passes_counts = passes_counts.sort_index()
     passes_counts = pd.DataFrame(passes_counts)
-    return pd.DataFrame(passes_counts).rename_axis('Passes').reset_index()
+    passes_counts.reset_index(inplace=True)
+    passes_counts.columns = ['Passes', 'count']
+    return passes_counts
 
 
 #Input: x (list)
