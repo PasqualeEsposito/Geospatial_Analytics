@@ -86,6 +86,7 @@ def count_distances(df):
     # Sort the DataFrame by distance
     distance_counts = distance_counts.sort_values(by='distance')
 
+    distance_counts.rename(columns={'index': 'distance', 'distance': 'count'}, inplace=True)
     distance_counts['distance'] = distance_counts['distance'].astype(int)
 
     return distance_counts
@@ -145,6 +146,8 @@ def group_by_distance_role(df):
     distance_counts_by_role = distance_counts_by_role.sort_values(by='distance')
 
     distance_counts_by_role['distance'] = distance_counts_by_role['distance'].astype(int)
+
+    distance_counts_by_role.rename(columns={0: 'count'}, inplace=True)
 
     return distance_counts_by_role
 
