@@ -86,7 +86,6 @@ def count_distances(df):
     # Sort the DataFrame by distance
     distance_counts = distance_counts.sort_values(by='distance')
 
-    distance_counts.rename(columns={'index': 'distance', 'distance': 'count'}, inplace=True)
     distance_counts['distance'] = distance_counts['distance'].astype(int)
 
     return distance_counts
