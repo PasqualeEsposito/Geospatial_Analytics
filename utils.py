@@ -169,18 +169,19 @@ def plot_histogram_per_role(df, title):
 #Output: passes_before_shot (dictionary)
 #
 #The function counts all the passes before a shot.
-def get_passes_before_shot(events_df):
+def get_passes_before_shot(events_df, matches_df):
     passes_before_shot = {}
     for index, row in events_df.iterrows():
         if row['eventId'] == 10:
             match_id = row['matchId']
             event_sec = row['eventSec']
+            team_id = row['teamId']
             
-            passes_before_shot[match_id, event_sec] = 0
-            
+            passes_before_shot[match_id, team_id, event_sec, matches_df[matches_df['wyId'] == match_id]['winner'].iloc[0]] = 0
+
             for i in range(index - 1, -1, -1):
                 if events_df.at[i, 'eventId'] in [3, 8] and events_df.at[i, 'teamId'] == row['teamId']:
-                    passes_before_shot[match_id, event_sec] += 1
+                    passes_before_shot[match_id, team_id, event_sec, matches_df[matches_df['wyId'] == match_id]['winner'].iloc[0]] += 1
                 elif events_df.at[i, 'teamId'] != row['teamId']:
                     break
     return passes_before_shot
@@ -273,6 +274,7 @@ def from_coords_to_tesselation(positions):
 
 #Input: pitch (string), line (string), probabilities (list), prev_tile (integer)
 # Output: 
+#
 # The function draws the pitch with the probabilities of predicting each tile.
 def draw_pitch(pitch, line, probabilities, prev_tile):
     line = line
@@ -364,3 +366,84 @@ def draw_pitch(pitch, line, probabilities, prev_tile):
     ax.add_artist(rec1)
     ax.add_artist(rec2)
     ax.add_artist(circle3)
+
+
+# Input: df (DataFrame), passes_value (integer)
+# Output: value_counts (DataFrame)
+#
+# The function plots the distribution of won matches related to the length of the pass chain.
+def winning_probability_plot(df, passes_value):
+    grouped = df.groupby('matchId')['passes'].agg(lambda x: 0 if (x < passes_value).all() else (2 if (x > passes_value).all() else 1)).reset_index()
+
+    # Rename columns and display the new DataFrame
+    grouped.columns = ['matchId', 'class']
+
+    value_counts = grouped['class'].value_counts()
+
+    # Plot the results
+    value_counts.plot(kind='bar', color='skyblue', figsize=(15, 6), rot=0)
+
+    # Add labels and title
+    txt="\n\nThe class 0 represents the matches won by the teams that scored all the match goals after a short pass chain, the class 1 represents\n" + \
+        "the matches won by the teams that scored at least a match goal after a short pass chain and at least a match goal after a long pass\n" + \
+        " chain, the class 2 represents the matches won by the teams that scored all the match goals after a short pass chain. The threshold of a\n" + \
+        " short pass chain is a pass chain with less than %d passes." %passes_value
+    plt.xlabel('Class' + txt)
+    plt.ylabel('Count')
+    plt.title('Distribution of won matches related to the length of the pass chain')
+
+    # Show plot
+    plt.show()
+    return value_counts
+
+
+def total_winning_probability_plot(df, passes_value):
+    grouped = df.groupby(df.index)['count'].sum()
+    # Rename columns and display the new DataFrame
+    grouped.columns = ['class', 'count']
+
+    # Plot the results
+    grouped.plot(kind='bar', color='skyblue', figsize=(15, 6), rot=0)
+
+    # Add labels and title
+    txt="\n\nThe class 0 represents the matches won by the teams that scored all the match goals after a short pass chain, the class 1 represents\n" + \
+        "the matches won by the teams that scored at least a match goal after a short pass chain and at least a match goal after a long pass\n" + \
+        " chain, the class 2 represents the matches won by the teams that scored all the match goals after a short pass chain. The threshold of a\n" + \
+        " short pass chain is a pass chain with less than %d passes." %passes_value
+    plt.xlabel('Class' + txt)
+    plt.ylabel('Count')
+    plt.title('Distribution of won matches related to the length of the pass chain')
+
+    # Show plot
+    plt.show()
+
+
+# Input: dictionary (dictionary), short_passes_value (integer)
+# Output: value_counts (DataFrame)
+#
+# The function plots the distribution of won matches related to the length of the pass chain.
+def winning_probability(dictionary, short_passes_value):    
+    keys_to_remove = []
+    for key in dictionary.keys():
+        if(key[1] !=  key[3]):
+            keys_to_remove.append(key)
+
+    for key in keys_to_remove:
+        del dictionary[key]
+
+    new_list = []
+    for key in dictionary.keys():
+        new_list.append([key[0], key[3], dictionary[key]])
+
+    df = pd.DataFrame(new_list, columns=['matchId', 'winner', 'passes'])
+
+    prob = []
+    for row in df.itertuples():
+        if row.passes < short_passes_value:
+            prob.append(True)
+        else:
+            prob.append(False)
+    df['short_passes'] = prob
+
+    value_counts = winning_probability_plot(df, short_passes_value)
+    return value_counts
