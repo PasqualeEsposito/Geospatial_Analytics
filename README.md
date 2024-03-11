@@ -5,3 +5,5 @@ The first objective of the analysis was to study the distances covered in a foot
 The second objective of the project was to examine and understand how the length of passing chains can increase or decrease the probability of taking a shot, scoring a goal or winning the match.
 
 The last part of the project focused on examining and calculating the predictability of passing chains performed during a match. The football field was divided into tiles and, through a recurrent neural network (RNN), an attempt was made to understand how predictable the passing chains were.
+
+The dataset used for the project is available here: https://figshare.com/collections/Soccer_match_event_dataset/4415000/2.
