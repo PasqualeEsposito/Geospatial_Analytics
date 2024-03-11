@@ -4,55 +4,66 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 
-#Input: 'events_df' (DataFrame), 'area' (string)
-#Output: 'events' (DataFrame)
-#
-#The function retrieves all the events of a specific competition (the competition is given by the 'area') and it removes all the
-#events which have 0 as playerId, which are mainly 'Ball out of the field'.
+
 def extract_events(events_df, area):
+    """
+        Input: events_df (DataFrame), area (string)
+        Output: 'events' (DataFrame)
+
+        The function retrieves all the events of a specific competition (the competition is given by the 'area') and it removes all the
+        events which have 0 as playerId, which are mainly 'Ball out of the field'.
+    """
     events = events_df[area][events_df[area]['playerId'] != 0]
     return events
 
 
-#Input: 'events' (DataFrame)
-#Output: 'events' (DataFrame)
-#
-#The function adds two columns to the DataFrame, 'x' and 'y', which are the x and y coordinates of the starting point of the event.
-#Then, it removes the columns 'id', 'subEventName', 'positions', 'eventName' from the DataFrame and returns it.
 def prepare_events(events):
+    """
+        Input: events (DataFrame)
+        Output: events (DataFrame)
+
+        The function adds two columns to the DataFrame, 'x' and 'y', which are the x and y coordinates of the starting point of the event.
+        Then, it removes the columns 'id', 'subEventName', 'positions', 'eventName' from the DataFrame and returns it.
+    """
     events['x'] = events['positions'].apply(lambda x: x[0]['x'])
     events['y'] = events['positions'].apply(lambda x: x[0]['y'])
     events.drop(columns={'id', 'subEventName', 'positions', 'eventName'}, inplace=True)
     return events
 
 
-#Input: 'role' (dictionary)
-#Output: 'role' (string)
-#
-#The function returns the value of the key 'code2' that is into the dictionary 'role' of the players in the players_df DataFrame.
 def extract_role(role):
+    """
+        Input: role (dictionary)
+        Output: role (string)
+
+        The function returns the value of the key 'code2' that is into the dictionary 'role' of the players in the players_df DataFrame.
+    """
     return role.get('code2')
 
 
-#Input: players_df (DataFrame)
-#Output: players_df (DataFrame)
-#
-#The function makes some transformations on the players_df DataFrame. Specifically, it transforms the 'role' column into a string
-#value and removes all the columns but 'wyId' and 'role'. Furthermore, it changes the name of the 'wyId' column into 'playerId'.
 def prepare_players(players_df):
+    """
+        Input: players_df (DataFrame)
+        Output: players_df (DataFrame)
+
+        The function makes some transformations on the players_df DataFrame. Specifically, it transforms the 'role' column into a string
+        value and removes all the columns but 'wyId' and 'role'. Furthermore, it changes the name of the 'wyId' column into 'playerId'.
+    """
     players_df['role'] = players_df['role'].apply(extract_role)
     players_df.drop(columns={'passportArea','weight','height','foot','birthArea','birthDate','middleName','firstName','lastName', 'currentNationalTeamId', 'shortName', 'currentTeamId'},inplace=True)
     players_df.rename(columns={'wyId':'playerId'}, inplace=True)
     return players_df
 
 
-#Input: df (DataFrame)
-#Output: df (DataFrame)
-#
-#The function computes the distance between two points. Specifically, it computes the distance between two consecutive events that
-#have the same 'matchId', 'playerId', 'matchPeriod'. Also, it transforms the distance into meters, multiplying the difference for
-#1.05 and 0.65, assuming that a football pitch size is 105x65 meters. 
 def compute_distance(df):
+    """
+        Input: df (DataFrame)
+        Output: df (DataFrame)
+
+        The function computes the distance between two points. Specifically, it computes the distance between two consecutive events that
+        have the same 'matchId', 'playerId', 'matchPeriod'. Also, it transforms the distance into meters, multiplying the difference for
+        1.05 and 0.65, assuming that a football pitch size is 105x65 meters. 
+    """
     # Sort the dataframe by playerId, matchId, matchPeriod, gameweek, and eventSec
     df.sort_values(by=['matchId', 'playerId', 'matchPeriod', 'eventSec'], inplace=True)
 
@@ -65,22 +76,26 @@ def compute_distance(df):
     return df
 
 
-#Input: df (DataFrame)
-#Output: tmp_df (DataFrame)
-#
-#The function sums all values present in the 'distance' column, grouping them by the 'playerId' and 'matchId'. Also, it discretizes
-#the values, rounding them to the closest hundred.
 def sum_distances(df):
+    """
+        Input: df (DataFrame)
+        Output: tmp_df (DataFrame)
+
+        The function sums all values present in the 'distance' column, grouping them by the 'playerId' and 'matchId'. Also, it discretizes
+        the values, rounding them to the closest hundred.
+    """
     tmp_df = df.groupby(['playerId', 'matchId'])['distance'].sum()
     tmp_df = round(tmp_df, -2)
     return pd.DataFrame(tmp_df)
 
 
-#Input: df (DataFrame)
-#Output: distance_counts (DataFrame)
-#
-#The function counts all the distances and returns a count of each distance traveled by the players.
 def count_distances(df):
+    """"
+        Input: df (DataFrame)
+        Output: distance_counts (DataFrame)
+
+        The function counts all the distances and returns a count of each distance traveled by the players.
+    """
     # Count the occurrences of each unique distance value
     distance_counts = df['distance'].value_counts().reset_index()
 
@@ -92,10 +107,12 @@ def count_distances(df):
     return distance_counts
 
 
-#Input: df (DataFrame), x (string), y (string), xlabel (string), ylabel (string), title (string)
-#
-#The function plots the values present in the x and y axis of the df DataFrame.
-def plot_histogram(df, x, y, xlabel, ylabel, title):     
+def plot_histogram(df, x, y, xlabel, ylabel, title):
+    """
+        Input: df (DataFrame), x (string), y (string), xlabel (string), ylabel (string), title (string)
+
+        The function plots the values present in the x and y axis of the df DataFrame.
+    """
     plt.figure(figsize=(15, 6))
     sns.barplot(data=df, x=x, y=y, color='skyblue')
     plt.xlabel(xlabel)
@@ -105,10 +122,12 @@ def plot_histogram(df, x, y, xlabel, ylabel, title):
     plt.show()
 
 
-#Input: df (DataFrame), x (string), y (string), xlabel (string), ylabel (string), title (string)
-#
-#The function plots the values present in the x and y axis of the df DataFrame.
 def plot_histogram_pass_chain(df, x, y, xlabel, ylabel, title):
+    """
+        Input: df (DataFrame), x (string), y (string), xlabel (string), ylabel (string), title (string)
+
+        The function plots the values present in the x and y axis of the df DataFrame.
+    """
     plt.figure(figsize=(25, 6))
     colors = {False: '#18d17b', True: '#75bbfd'}
     sns.barplot(data=df, x='Passes', y='count', hue='duel', palette=colors)
@@ -119,10 +138,13 @@ def plot_histogram_pass_chain(df, x, y, xlabel, ylabel, title):
     plt.xticks(rotation=45)
     plt.show()
 
-#Input: df (DataFrame), x (string), y (string), xlabel (string), ylabel (string), title (string)
-#
-#The function plots the values present in the x and y axis of the df DataFrame.
+
 def plot_histogram_comparison_pass_chain(df, x, y, xlabel, ylabel, title):
+    """
+        Input: df (DataFrame), x (string), y (string), xlabel (string), ylabel (string), title (string)
+
+        The function plots the values present in the x and y axis of the df DataFrame.
+    """
     plt.figure(figsize=(25, 6))
     colors = {False: '#18d17b', True: '#75bbfd'}
     sns.barplot(data=df, x='Passes', y='count', hue='Goal', palette=colors, ci=None)
@@ -134,11 +156,14 @@ def plot_histogram_comparison_pass_chain(df, x, y, xlabel, ylabel, title):
     plt.show()
 
 
-#Input: df (DataFrame)
-#Output: distance_counts_by_role (DataFrame)
-#
-#This function groups by df by distance and role and counts the number of occurrences of this pair.
 def group_by_distance_role(df):
+    """
+        Input: df (DataFrame)
+        Output: distance_counts_by_role (DataFrame)
+
+        This function groups by df by distance and role and counts the number of occurrences of this pair.
+
+    """
     # Count the occurrences of each unique distance value
     distance_counts_by_role = df[['distance', 'role']].value_counts().reset_index()
 
@@ -152,10 +177,12 @@ def group_by_distance_role(df):
     return distance_counts_by_role
 
 
-#Input: df (DataFrame), title (string)
-#
-#This function plots a histogram for the distances traveled by players, divided by role.
 def plot_histogram_per_role(df, title):
+    """
+        Input: df (DataFrame), title (string)
+
+        This function plots a histogram for the distances traveled by players, divided by role.
+    """
     plt.figure(figsize=(25, 6))
     colors = {'GK': '#00bfff', 'DF': '#ff80a6', 'MD': '#ff331a', 'FW': '#ffbf00'}
     sns.barplot(data=df, x='distance', y='count', hue='role', palette=colors, ci=None)
@@ -166,11 +193,14 @@ def plot_histogram_per_role(df, title):
     plt.xticks(rotation=45)
     plt.show()
 
-#Input: events_df (DataFrame)
-#Output: passes_before_shot (dictionary)
-#
-#The function counts all the passes before a shot.
+
 def get_passes_before_shot(events_df, matches_df):
+    """
+        Input: events_df (DataFrame)
+        Output: passes_before_shot (dictionary)
+
+        The function counts all the passes before a shot.
+    """
     passes_before_shot = {}
     for index, row in events_df.iterrows():
         if row['eventId'] == 10:
@@ -188,12 +218,14 @@ def get_passes_before_shot(events_df, matches_df):
     return passes_before_shot
 
 
-#Input: dictionary (dictionary)
-#Output: passes_counts (DataFrame)
-#
-#The function counts the how many passes counts with the same value are present in the dictionary and returns a DataFrame with
-#these values.
 def count_passes_before_shot(dictionary):
+    """
+        Input: dictionary (dictionary)
+        Output: passes_counts (DataFrame)
+
+        The function counts the how many passes counts with the same value are present in the dictionary and returns a DataFrame with
+        these values.
+    """
     df = pd.DataFrame.from_dict(dictionary, orient='index', columns=['Passes'])
     passes_counts = df['Passes'].value_counts()
     passes_counts = passes_counts.sort_index()
@@ -203,19 +235,23 @@ def count_passes_before_shot(dictionary):
     return passes_counts
 
 
-#Input: x (list)
-#Output: tags (list)
-#
-#The function transforms a list of dictionaries into a list of integers.
 def extract_tags(x):
+    """
+        Input: x (list)
+        Output: tags (list)
+
+        The function transforms a list of dictionaries into a list of integers.
+    """
     tags = []
     for tag in x:
         tags.append(tag['id'])
     return tags
 
 
-#The function draws the tessellation applied for the third task of the project.
 def draw_pitch_tessellation():
+    """
+        The function draws the tessellation applied for the third task of the project.
+    """
     fig, ax = plt.subplots()
 
     rect = plt.Rectangle((0, 0), 3, 3, linewidth=2, edgecolor='black', facecolor='none')
@@ -239,11 +275,13 @@ def draw_pitch_tessellation():
     plt.show() 
 
 
-#Input: positions (list)
-#Output: piece (integer)
-#
-#The function maps the starting point of an event into a piece of a tessellation.
 def from_coords_to_tesselation(positions):
+    """
+        Input: positions (list)
+        Output: piece (integer)
+
+        The function maps the starting point of an event into a piece of a tessellation.
+    """
     position = positions[0]
     if position['x'] < 33:
         if position['y'] < 33:
@@ -273,11 +311,12 @@ def from_coords_to_tesselation(positions):
                 return 8
             
 
-#Input: pitch (string), line (string), probabilities (list), prev_tile (integer)
-# Output: 
-#
-# The function draws the pitch with the probabilities of predicting each tile.
 def draw_pitch(pitch, line, probabilities, prev_tile):
+    """
+        Input: pitch (string), line (string), probabilities (list), prev_tile (integer)
+
+        The function draws the pitch with the probabilities of predicting each tile.
+    """
     line = line
     pitch = pitch
     probability_colour = 'green'
@@ -285,7 +324,7 @@ def draw_pitch(pitch, line, probabilities, prev_tile):
     fig,ax = plt.subplots(figsize=(10.4,6.8))
     plt.xlim(-1,105)
     plt.ylim(-1,69)
-    ax.axis('off') # this hides the x and y ticks
+    ax.axis('off')
 
     # plot the probabilities of each tile
     left_corner = [(0, 136/3), (0, 68/3), (0,  0), (104/3, 136/3), (104/3, 68/3), (104/3, 0), (208/3, 136/3), (208/3, 68/3), (208/3, 0)]
@@ -369,11 +408,13 @@ def draw_pitch(pitch, line, probabilities, prev_tile):
     ax.add_artist(circle3)
 
 
-# Input: df (DataFrame), passes_value (integer)
-# Output: value_counts (DataFrame)
-#
-# The function plots the distribution of won matches related to the length of the pass chain.
 def winning_probability_plot(df, passes_value):
+    """
+        Input: df (DataFrame), passes_value (integer)
+        Output: value_counts (DataFrame)
+
+        The function plots the distribution of won matches related to the length of the pass chain.
+    """
     grouped = df.groupby('matchId')['passes'].agg(lambda x: 0 if (x < passes_value).all() else (2 if (x > passes_value).all() else 1)).reset_index()
 
     # Rename columns and display the new DataFrame
@@ -399,6 +440,11 @@ def winning_probability_plot(df, passes_value):
 
 
 def total_winning_probability_plot(df, passes_value):
+    """
+        Input: df (DataFrame), passes_value (integer)
+
+        The function plots the total distribution of won matches related to the length of the pass chain. 
+    """
     grouped = df.groupby(df.index)['count'].sum()
     # Rename columns and display the new DataFrame
     grouped.columns = ['class', 'count']
@@ -419,11 +465,13 @@ def total_winning_probability_plot(df, passes_value):
     plt.show()
 
 
-# Input: dictionary (dictionary), short_passes_value (integer)
-# Output: value_counts (DataFrame)
-#
-# The function plots the distribution of won matches related to the length of the pass chain.
-def winning_probability(dictionary, short_passes_value):    
+def winning_probability(dictionary, short_passes_value):
+    """
+        Input: dictionary (dictionary), short_passes_value (integer)
+        Output: value_counts (DataFrame)
+
+        The function plots the distribution of won matches related to the length of the pass chain.
+    """
     keys_to_remove = []
     for key in dictionary.keys():
         if(key[1] !=  key[3]):
@@ -450,11 +498,11 @@ def winning_probability(dictionary, short_passes_value):
     return value_counts
 
 
-# Input:
-# Output: 
-#
-# The function draws the tessellation of the pitch.
 def draw_tessellation():
+    """
+        The function draws the tessellation of the pitch.
+
+    """    
     line = 'black'
     pitch = 'green'
     
