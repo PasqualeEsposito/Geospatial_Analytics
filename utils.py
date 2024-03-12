@@ -516,7 +516,7 @@ def draw_tessellation():
     for i in range(9):
         center_x = left_corner[i][0] + 104/3 / 2
         center_y = left_corner[i][1] + 68/3 / 2
-        text = plt.Text(center_x, center_y, i, ha='center', weight='bold', va='center', color='white', alpha=1, zorder=10)
+        text = plt.Text(center_x, center_y, i, ha='center', weight='bold', va='center', color='white', alpha=1, zorder=10, fontsize=24)
         ax.add_artist(text)
 
     # side and goal lines #
@@ -576,10 +576,10 @@ def draw_tessellation():
     ## Pitch rectangle
     rec3 = plt.Rectangle((-1, -1), 106,70,ls='-',color=pitch, zorder=1,alpha=1)
 
-    plt.plot([104/3, 104/3], [0, 68], color=line, zorder=5)
-    plt.plot([(104/3)*2, (104/3)*2], [0, 68], color=line, zorder=5)
-    plt.plot([0, 104], [68/3, 68/3], color=line, zorder=5)
-    plt.plot([0, 104], [(68/3)*2, (68/3)*2], color=line, zorder=5)
+    plt.plot([104/3, 104/3], [0, 68], color='white', zorder=5)
+    plt.plot([(104/3)*2, (104/3)*2], [0, 68], color='white', zorder=5)
+    plt.plot([0, 104], [68/3, 68/3], color='white', zorder=5)
+    plt.plot([0, 104], [(68/3)*2, (68/3)*2], color='white', zorder=5)
 
     ax.add_artist(rec3)
     ax.add_artist(circle1)
